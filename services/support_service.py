@@ -27,3 +27,20 @@ def support_work_service(
         amount=amount,
     )
 
+
+def get_supports_for_work_service(
+    db: Session,
+    work_id: int,
+) -> list[Support]:
+    work = work_repository.get_work_by_id(db, work_id)
+
+    if work is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Work not found",
+        )
+
+    return support_repository.get_supports_by_work_id(
+        db=db,
+        work_id=work_id,
+    )

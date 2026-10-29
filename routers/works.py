@@ -94,3 +94,17 @@ def support_work(
         supporter_id=current_user.id,
         amount=support_data.amount,
     )
+
+
+@router.get(
+    "/{work_id}/support",
+    response_model=list[SupportResponse],
+)
+def get_supports_for_work(
+    work_id: int,
+    db: Session = Depends(get_db),
+):
+    return support_service.get_supports_for_work_service(
+        db=db,
+        work_id=work_id,
+    )

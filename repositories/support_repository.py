@@ -22,3 +22,10 @@ def create_support(
 
     return new_support
 
+
+def get_supports_by_work_id(db: Session, work_id: int) -> list[Support]:
+    return (
+        db.query(Support)
+        .filter(Support.work_id == work_id)
+        .all()
+    )
