@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from models.support import Support
-from repositories import support_repository, work_repository
+from repositories import support_repository, user_repository, work_repository
 
 
 def support_work_service(
@@ -44,3 +44,24 @@ def get_supports_for_work_service(
         db=db,
         work_id=work_id,
     )
+
+
+def get_supports_for_user_service(
+    db: Session,
+    user_id: int,
+) -> list[Support]:
+    user = user_repository.get_user_by_id(db, user_id)
+
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    return support_repository.get_supports_by_supporter_id(
+        db=db,
+        user_id=user_id,
+    )
+
+
+get_user_supports_service = get_supports_for_user_service

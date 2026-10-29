@@ -29,3 +29,15 @@ def get_supports_by_work_id(db: Session, work_id: int) -> list[Support]:
         .filter(Support.work_id == work_id)
         .all()
     )
+
+
+def get_supports_by_supporter_id(db: Session, user_id: int) -> list[Support]:
+    return (
+        db.query(Support)
+        .filter(Support.supporter_id == user_id)
+        .all()
+    )
+
+
+def get_supports_by_user_id(db: Session, user_id: int) -> list[Support]:
+    return get_supports_by_supporter_id(db, user_id)
