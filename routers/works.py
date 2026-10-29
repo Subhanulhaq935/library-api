@@ -1,12 +1,12 @@
-
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from core.database import get_db
 from dependencies.auth import get_current_user
 from models.user import User
+from schemas.support import SupportCreate, SupportResponse
 from schemas.work import WorkCreate, WorkUpdate, WorkResponse
-from services import work_service
+from services import support_service, work_service
 
 router = APIRouter(prefix="/works", tags=["Works"])
 
@@ -74,4 +74,23 @@ def delete_work(
         db=db,
         work_id=work_id,
         current_user_id=current_user.id,
+    )
+
+
+@router.post(
+    "/{work_id}/support",
+    response_model=SupportResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def support_work(
+    work_id: int,
+    support_data: SupportCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return support_service.support_work_service(
+        db=db,
+        work_id=work_id,
+        supporter_id=current_user.id,
+        amount=support_data.amount,
     )

@@ -5,7 +5,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class SupportCreate(BaseModel):
-    work_id: int
     amount: Decimal = Field(gt=0)
 
 
