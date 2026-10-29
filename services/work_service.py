@@ -1,4 +1,3 @@
-
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -25,6 +24,36 @@ def get_work_service(db: Session, work_id: int):
         )
 
     return work
+
+
+def get_work_details_service(db: Session, work_id: int):
+    result = work_repository.get_work_details_by_id(db, work_id)
+
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Work not found",
+        )
+
+    work = result[0]
+    author = result[1]
+    total_support = result[2]
+
+    return {
+        "id": work.id,
+        "title": work.title,
+        "description": work.description,
+        "content": work.content,
+        "artist_id": work.artist_id,
+        "created_at": work.created_at,
+        "updated_at": work.updated_at,
+        "author": {
+            "id": author.id,
+            "username": author.username,
+            "email": author.email,
+        },
+        "total_support": total_support,
+    }
 
 
 def get_all_works_service(

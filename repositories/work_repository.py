@@ -1,5 +1,8 @@
-
+from sqlalchemy import func
 from sqlalchemy.orm import Session
+
+from models.support import Support
+from models.user import User
 from models.work import Work
 
 
@@ -17,6 +20,21 @@ def get_work_by_id(db: Session, work_id: int):
     return (
         db.query(Work)
         .filter(Work.id == work_id)
+        .first()
+    )
+
+
+def get_work_details_by_id(db: Session, work_id: int):
+    return (
+        db.query(
+            Work,
+            User,
+            func.coalesce(func.sum(Support.amount), 0).label("total_support"),
+        )
+        .join(User, Work.artist_id == User.id)
+        .outerjoin(Support, Work.id == Support.work_id)
+        .filter(Work.id == work_id)
+        .group_by(Work.id, User.id)
         .first()
     )
 

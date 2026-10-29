@@ -5,7 +5,7 @@ from core.database import get_db
 from dependencies.auth import get_current_user
 from models.user import User
 from schemas.support import SupportCreate, SupportResponse
-from schemas.work import WorkCreate, WorkUpdate, WorkResponse
+from schemas.work import WorkCreate, WorkUpdate, WorkResponse, WorkDetailResponse
 from services import support_service, work_service
 
 router = APIRouter(prefix="/works", tags=["Works"])
@@ -45,6 +45,17 @@ def get_work(
     db: Session = Depends(get_db),
 ):
     return work_service.get_work_service(db, work_id)
+
+
+@router.get(
+    "/{work_id}/details",
+    response_model=WorkDetailResponse,
+)
+def get_work_details(
+    work_id: int,
+    db: Session = Depends(get_db),
+):
+    return work_service.get_work_details_service(db, work_id)
 
 
 @router.put("/{work_id}", response_model=WorkResponse)

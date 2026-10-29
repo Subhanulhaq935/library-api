@@ -1,7 +1,9 @@
-
 from datetime import datetime
+from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
+
+from schemas.user import UserResponse
 
 
 class WorkCreate(BaseModel):
@@ -26,3 +28,11 @@ class WorkResponse(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class WorkDetailResponse(WorkResponse):
+    author: UserResponse
+    total_support: Decimal
+
+
+WorkDetailsResponse = WorkDetailResponse
