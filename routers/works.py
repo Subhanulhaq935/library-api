@@ -27,6 +27,7 @@ def create_work(
 @router.get("/", response_model=list[WorkResponse])
 def get_all_works(
     author_id: int | None = None,
+    min_support: float | None = Query(default=None, ge=0),
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
@@ -34,6 +35,7 @@ def get_all_works(
     return work_service.get_all_works_service(
         db=db,
         author_id=author_id,
+        min_support=min_support,
         skip=skip,
         limit=limit,
     )

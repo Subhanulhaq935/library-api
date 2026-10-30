@@ -42,16 +42,28 @@ def get_work_details_by_id(db: Session, work_id: int):
 def get_all_works(
     db: Session,
     author_id: int | None = None,
+    min_support: float | None = None,
     skip: int = 0,
     limit: int = 10,
 ):
-    query = db.query(Work)
+    query = (
+        db.query(
+            Work,
+            func.coalesce(func.sum(Support.amount), 0).label("total_support"),
+        )
+        .outerjoin(Support, Work.id == Support.work_id)
+        .group_by(Work.id)
+    )
 
     if author_id is not None:
         query = query.filter(Work.artist_id == author_id)
 
-    return query.offset(skip).limit(limit).all()
+    if min_support is not None:
+        query = query.having(
+            func.coalesce(func.sum(Support.amount), 0) >= min_support
+        )
 
+    return query.offset(skip).limit(limit).all()
 
 def update_work(db: Session, work: Work, update_data: dict) -> Work:
     for field, value in update_data.items():

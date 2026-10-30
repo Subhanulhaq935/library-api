@@ -59,15 +59,19 @@ def get_work_details_service(db: Session, work_id: int):
 def get_all_works_service(
     db: Session,
     author_id: int | None = None,
+    min_support: float | None = None,
     skip: int = 0,
     limit: int = 10,
 ):
-    return work_repository.get_all_works(
+    results = work_repository.get_all_works(
         db=db,
         author_id=author_id,
+        min_support=min_support,
         skip=skip,
         limit=limit,
     )
+
+    return [work for work, total_support in results]
 
 
 def update_work_service(
