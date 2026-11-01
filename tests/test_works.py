@@ -39,7 +39,7 @@ def test_create_work_success(
     assert data["artist_id"] == user.id
     assert "id" in data
 
-    # Verify work is saved in the test database
+    
     saved_work = db_session.query(Work).filter_by(id=data["id"]).first()
     assert saved_work is not None
     assert saved_work.title == payload["title"]

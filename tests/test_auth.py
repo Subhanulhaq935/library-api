@@ -17,11 +17,9 @@ def test_user_registration_success(client, db_session):
     assert data["email"] == payload["email"]
     assert "id" in data
 
-    # Verify password is not exposed in the response
     assert "password" not in data
     assert "password_hash" not in data
 
-    # Verify user is saved in the test database
     saved_user = db_session.query(User).filter_by(email=payload["email"]).first()
     assert saved_user is not None
     assert saved_user.username == payload["username"]
@@ -77,7 +75,6 @@ def test_user_login_invalid_credentials(client, create_test_user):
         password="correctpassword",
     )
 
-    # Wrong password
     response_wrong_pw = client.post(
         "/auth/login",
         data={

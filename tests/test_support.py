@@ -7,7 +7,6 @@ def test_work_details_with_total_support(
     create_test_user,
     get_token_for_user,
 ):
-    # 1. Create an author
     author = create_test_user(
         username="bookauthor",
         email="author@example.com",
@@ -18,7 +17,6 @@ def test_work_details_with_total_support(
         password="authorpassword",
     )
 
-    # 2. Create a work belonging to that author
     work_resp = client.post(
         "/works/",
         json={
@@ -31,7 +29,7 @@ def test_work_details_with_total_support(
     assert work_resp.status_code == status.HTTP_201_CREATED
     work_id = work_resp.json()["id"]
 
-    # 3. Create a supporter and add support records of 100, 200, and 300
+    
     create_test_user(
         username="supporter1",
         email="supporter1@example.com",
@@ -51,12 +49,11 @@ def test_work_details_with_total_support(
         )
         assert support_resp.status_code == status.HTTP_201_CREATED
 
-    # 4. Call the existing work details endpoint
+    
     details_resp = client.get(f"/works/{work_id}/details")
     assert details_resp.status_code == status.HTTP_200_OK
     details = details_resp.json()
 
-    # 5. Verify work information
     assert details["id"] == work_id
     assert details["title"] == "Supported Masterpiece"
     assert details["description"] == "A popular book with community support"
@@ -68,7 +65,6 @@ def test_work_details_with_total_support(
     assert details["author"]["username"] == "bookauthor"
     assert details["author"]["email"] == "author@example.com"
 
-    # 7. Verify that total_support equals 600.00
     assert Decimal(str(details["total_support"])) == Decimal("600.00")
 
 
