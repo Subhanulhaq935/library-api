@@ -44,6 +44,8 @@ class Work(Base):
     artist = relationship("User", back_populates="works")
 
     supports = relationship(
-        "Support",
-        back_populates="work",
-    )
+    "Support",
+    back_populates="work",
+    cascade="all, delete-orphan",
+    passive_deletes=True
+)
