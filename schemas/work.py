@@ -10,19 +10,27 @@ from schemas.user import UserResponse
 class WorkCreate(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     description: str | None = None
-    content: str
+    content: str = Field(min_length=1)
 
 
 class WorkUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = None
-    content: str | None = None
+    content: str | None = Field(default=None, min_length=1)
 
     @field_validator("title")
     @classmethod
     def validate_title(cls, value):
         if value is None:
             raise ValueError("Title cannot be null")
+
+        return value
+
+    @field_validator("content")
+    @classmethod
+    def validate_content(cls, value):
+        if value is None:
+            raise ValueError("Content cannot be null")
 
         return value
 
