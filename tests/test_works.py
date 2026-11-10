@@ -226,3 +226,166 @@ def test_delete_work_after_support(
     )
 
     assert deleted_support is None
+
+
+# -------------------------------
+# Work Title Validation Tests
+# -------------------------------
+
+def test_update_work_with_null_title_returns_422(
+    client,
+    create_test_user,
+    get_token_for_user,
+):
+    create_test_user(
+        username="null_title_user",
+        email="null_title@example.com",
+        password="password123",
+    )
+
+    token = get_token_for_user(
+        email="null_title@example.com",
+        password="password123",
+    )
+
+    create_response = client.post(
+        "/works/",
+        json={
+            "title": "Original Title",
+            "description": "Original Description",
+            "content": "Original Content",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert create_response.status_code == status.HTTP_201_CREATED
+
+    work_id = create_response.json()["id"]
+
+    response = client.put(
+        f"/works/{work_id}",
+        json={"title": None},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+def test_update_work_with_empty_title_returns_422(
+    client,
+    create_test_user,
+    get_token_for_user,
+):
+    create_test_user(
+        username="empty_title_user",
+        email="empty_title@example.com",
+        password="password123",
+    )
+
+    token = get_token_for_user(
+        email="empty_title@example.com",
+        password="password123",
+    )
+
+    create_response = client.post(
+        "/works/",
+        json={
+            "title": "Original Title",
+            "description": "Original Description",
+            "content": "Original Content",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert create_response.status_code == status.HTTP_201_CREATED
+
+    work_id = create_response.json()["id"]
+
+    response = client.put(
+        f"/works/{work_id}",
+        json={"title": ""},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+def test_update_work_with_long_title_returns_422(
+    client,
+    create_test_user,
+    get_token_for_user,
+):
+    create_test_user(
+        username="long_title_user",
+        email="long_title@example.com",
+        password="password123",
+    )
+
+    token = get_token_for_user(
+        email="long_title@example.com",
+        password="password123",
+    )
+
+    create_response = client.post(
+        "/works/",
+        json={
+            "title": "Original Title",
+            "description": "Original Description",
+            "content": "Original Content",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert create_response.status_code == status.HTTP_201_CREATED
+
+    work_id = create_response.json()["id"]
+
+    response = client.put(
+        f"/works/{work_id}",
+        json={"title": "A" * 201},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+def test_update_work_with_200_character_title_success(
+    client,
+    create_test_user,
+    get_token_for_user,
+):
+    create_test_user(
+        username="valid_title_user",
+        email="valid_title@example.com",
+        password="password123",
+    )
+
+    token = get_token_for_user(
+        email="valid_title@example.com",
+        password="password123",
+    )
+
+    create_response = client.post(
+        "/works/",
+        json={
+            "title": "Original Title",
+            "description": "Original Description",
+            "content": "Original Content",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert create_response.status_code == status.HTTP_201_CREATED
+
+    work_id = create_response.json()["id"]
+
+    valid_title = "A" * 200
+
+    response = client.put(
+        f"/works/{work_id}",
+        json={"title": valid_title},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["title"] == valid_title

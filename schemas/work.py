@@ -1,21 +1,30 @@
+
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from schemas.user import UserResponse
 
 
 class WorkCreate(BaseModel):
-    title: str
+    title: str = Field(min_length=1, max_length=200)
     description: str | None = None
     content: str
 
 
 class WorkUpdate(BaseModel):
-    title: str | None = None
+    title: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = None
     content: str | None = None
+
+    @field_validator("title")
+    @classmethod
+    def validate_title(cls, value):
+        if value is None:
+            raise ValueError("Title cannot be null")
+
+        return value
 
 
 class WorkResponse(BaseModel):
