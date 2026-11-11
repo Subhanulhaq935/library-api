@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from decimal import Decimal
 
@@ -12,6 +11,20 @@ class WorkCreate(BaseModel):
     description: str | None = None
     content: str = Field(min_length=1)
 
+    @field_validator("title")
+    @classmethod
+    def validate_title(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Title cannot be empty or whitespace only")
+        return value
+
+    @field_validator("content")
+    @classmethod
+    def validate_content(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Content cannot be empty or whitespace only")
+        return value
+
 
 class WorkUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
@@ -23,7 +36,8 @@ class WorkUpdate(BaseModel):
     def validate_title(cls, value):
         if value is None:
             raise ValueError("Title cannot be null")
-
+        if not value.strip():
+            raise ValueError("Title cannot be empty or whitespace only")
         return value
 
     @field_validator("content")
@@ -31,7 +45,8 @@ class WorkUpdate(BaseModel):
     def validate_content(cls, value):
         if value is None:
             raise ValueError("Content cannot be null")
-
+        if not value.strip():
+            raise ValueError("Content cannot be empty or whitespace only")
         return value
 
 
