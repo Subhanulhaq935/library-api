@@ -20,6 +20,12 @@ def support_work_service(
             detail="Work not found",
         )
 
+    if work.artist_id == supporter_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot support your own work",
+        )
+
     return support_repository.create_support(
         db=db,
         work_id=work_id,
